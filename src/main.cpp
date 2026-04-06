@@ -145,7 +145,14 @@ static void drawAndRemove() {
 
 /* Callback to play reminder audio */
 static void playAudio() {
+    HINSTANCE hinst = GetModuleHandle(nullptr);
+    HRSRC hres = FindResource(hinst, MAKEINTRESOURCE(IDR_LOCK_IN), RT_RCDATA);
+    if (!hres) return;
 
+    HGLOBAL hglob = LoadResource(hinst, hres);
+    void*   pdata = LockResource(hglob);
+
+    PlaySound(reinterpret_cast<LPCSTR>(static_cast<LPCWSTR>(pdata)), nullptr, SND_MEMORY | SND_ASYNC | SND_NODEFAULT);
 }
 
 /* Reminder thread entrypoint */
