@@ -129,7 +129,7 @@ static void drawAndRemove() {
     const int sw = GetSystemMetrics(SM_CXSCREEN);
     const int sh = GetSystemMetrics(SM_CYSCREEN);
     const int ow = sw;
-    const int oh = sh / 8;
+    const int oh = sh;
     const int oy = (sh - oh) / 2;
 
     HBITMAP hbmp = loadBitmap(randomBmp());
