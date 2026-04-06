@@ -14,6 +14,31 @@ constexpr UINT  TIMER_DISMISS       = 1;
 
 atomic<bool> running(true);
 
+/* load packaged BMP file from embedded source */
+static HBITMAP loadBitmap() {
+    HINSTANCE hinst = GetModuleHandle(nullptr);
+    HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(IDB_GOLDEN_POSTURE), RT_RCDATA);
+    if (!hres) return nullptr;
+
+    HGLOBAL hglob = LoadResource(hinst, hres);
+    void*   pdata = LockResource(hglob);
+
+    auto* fhdr = static_cast<BITMAPFILEHEADER*>(pdata);
+    auto* ihdr = reinterpret_cast<BITMAPINFO*>(static_cast<BYTE*>(pdata) + sizeof(BITMAPFILEHEADER));
+
+    HDC     hdc = GetDC(nullptr);
+    HBITMAP hbm = CreateDIBitmap(
+        hdc,
+        &ihdr->bmiHeader,
+        CBM_INIT,
+        static_cast<BYTE*>(pdata) + fhdr->bfOffBits,
+        ihdr,
+        DIB_RGB_COLORS
+    );
+    ReleaseDC(nullptr, hdc);
+    return hbm;
+}
+
 /* Callback to draw and remove reminder image */
 static void drawAndRemove() {
     
