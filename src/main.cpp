@@ -1,29 +1,33 @@
 #include <windows.h>
+#include <gdiplus.h>
+#pragma comment (lib,"Gdiplus.lib")
+#include "../include/resource.h"
+#include <random>
 #include <thread>
 #include <atomic>
 #include <chrono>
-#include "../include/resource.h"
 #include <cstdio>
 using namespace std;
+using namespace Gdiplus;
 
 
-constexpr int delay = 10;
+constexpr UINT delay = 10;
 atomic<bool> running(true);
 int imgIDs[] = { IDB_BIG_PAPI, IDB_GOLDEN_POSTURE, IDB_MEOW };
 
 void drawAndRemove() {
-    int selectedID = imgIDs[rand() % 3];
-
     
 }
 
 void postureReminder() {
     int localDelay = delay;
-    unsigned long long runtime = 0;
-    unsigned long long iteration = 0;
+    ULONGLONG runtime = 0;
+    ULONGLONG iteration = 0;
     while (running) {
         if (localDelay > 0) {
             printf("[+] Delayed 1 second | Seconds left: %d | Total seconds elapsed: %llu\n", localDelay, runtime);
+
+            drawAndRemove();
 
             this_thread::sleep_for(chrono::seconds(1));
             localDelay--;
