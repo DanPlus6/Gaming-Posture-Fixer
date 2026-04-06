@@ -161,22 +161,17 @@ static void drawAndRemove() {
 
 /* Reminder thread entrypoint */
 static void postureReminder() {
-    int       localDelay = REMINDER_DELAY_S;
-    ULONGLONG runtime    = 0;
-    ULONGLONG iteration  = 0;
+    int localDelay = REMINDER_DELAY_S;
 
     while (running) {
         if (localDelay > 0) {
-            printf("[+] Delayed 1 second | Seconds left: %d | Total seconds elapsed: %llu\n", localDelay, runtime);
             this_thread::sleep_for(chrono::seconds(1));
             localDelay--;
         } else {
-            printf("[+] Iteration %llu\n", ++iteration);
             thread(playAudio).detach();
             drawAndRemove();
             localDelay = REMINDER_DELAY_S;
         }
-        runtime++;
     }
 }
 
@@ -188,7 +183,6 @@ static void keybindListener() {
         bool l     = GetAsyncKeyState('L')        & 0x8000;
 
         if (ctrl && shift && l) {
-            printf("[+] ------------------------ Keybind pressed, program terminating ------------------------\n");
             running = false;
             exit(0);
         }
@@ -199,14 +193,11 @@ static void keybindListener() {
 
 /* Main program entrypoint */
 int main() {
-    printf("[+] --------------------- Entrypoint triggered --------------------- \n");
-
     thread listener(keybindListener);
     thread reminder(postureReminder);
 
     reminder.join();
     listener.detach();
 
-    printf("[-] --------------------- !!! Main thread intiatively terminated !!! ---------------------\n");
     return 0;
 }
