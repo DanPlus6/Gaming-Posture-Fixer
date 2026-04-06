@@ -11,7 +11,7 @@ using namespace std;
 constexpr UINT  REMINDER_DELAY_S    = 5;
 constexpr UINT  OVERLAY_DURATION_MS = 500;
 constexpr UINT  BMP_IDS[]           = { IDB_GOLDEN_POSTURE, IDB_BIG_PAPI, IDB_MEOW };
-constexpr UINT  BMP_COUNT           = 3;
+constexpr UINT  BMP_COUNT           = static_cast<UINT>(sizeof(BMP_IDS)) / sizeof(UINT);
 constexpr WCHAR OVERLAY_CLASS[]     = L"PostureOverlay";
 constexpr UINT  TIMER_DISMISS       = 1;
 
