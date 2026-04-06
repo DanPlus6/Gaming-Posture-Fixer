@@ -7,24 +7,16 @@
 using namespace std;
 
 
+constexpr int delay = 10;
 atomic<bool> running(true);
-void keybindListener() {
-    while (running) {
-        bool ctrl  = GetAsyncKeyState(VK_CONTROL) & 0x8000;
-        bool shift = GetAsyncKeyState(VK_SHIFT)   & 0x8000;
-        bool l     = GetAsyncKeyState('L')        & 0x8000;
-        
-        if (ctrl && shift && l) {
-            printf("[+] ------------------------ Keybind pressed, program terminating ------------------------\n");
-            running = false;
-            exit(0);
-        }
+int imgIDs[] = { IDB_BIG_PAPI, IDB_GOLDEN_POSTURE, IDB_MEOW };
 
-        this_thread::sleep_for(chrono::milliseconds(10));
-    }
+void drawAndRemove() {
+    int selectedID = imgIDs[rand() % 3];
+
+    
 }
 
-constexpr int delay = 10;
 void postureReminder() {
     int localDelay = delay;
     unsigned long long runtime = 0;
@@ -44,6 +36,21 @@ void postureReminder() {
     }
 }
 
+void keybindListener() {
+    while (running) {
+        bool ctrl  = GetAsyncKeyState(VK_CONTROL) & 0x8000;
+        bool shift = GetAsyncKeyState(VK_SHIFT)   & 0x8000;
+        bool l     = GetAsyncKeyState('L')        & 0x8000;
+        
+        if (ctrl && shift && l) {
+            printf("[+] ------------------------ Keybind pressed, program terminating ------------------------\n");
+            running = false;
+            exit(0);
+        }
+
+        this_thread::sleep_for(chrono::milliseconds(10));
+    }
+}
 
 int main() {
     printf("[+] --------------------- Entrypoint triggered --------------------- \n");

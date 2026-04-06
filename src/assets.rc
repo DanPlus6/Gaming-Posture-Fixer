@@ -1,5 +1,0 @@
-#include "../include/assets.h"
-
-IDB_GOLDEN_POSTURE BITMAP "../assets/golden-posture.bmp"
-IDB_BIG_PAPI       BITMAP "../assets/big-papi.bmp"
-IDB_MEOW           BITMAP "../assets/meow.bmp"
