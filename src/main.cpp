@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <mmsystem.h>
 #include "../include/resource.h"
 #include <random>
 #include <thread>
@@ -10,7 +11,7 @@ using namespace std;
 constexpr UINT  REMINDER_DELAY_S    = 10;
 constexpr UINT  OVERLAY_DURATION_MS = 5000;
 constexpr UINT  BMP_IDS[]           = { IDB_GOLDEN_POSTURE, IDB_BIG_PAPI, IDB_MEOW };
-constexpr UINT  BMP_COUNT           = sizeof(BMP_IDS);
+constexpr UINT  BMP_COUNT           = 3;
 constexpr WCHAR OVERLAY_CLASS[]     = L"PostureOverlay";
 constexpr UINT  TIMER_DISMISS       = 1;
 
@@ -23,7 +24,7 @@ static UINT randomBmp() {
     return BMP_IDS[dist(rng)];
 }
 
-/* load packaged BMP file from embedded source */
+/* load packaged BMP file from embedded resource */
 static HBITMAP loadBitmap(UINT id) {
     HINSTANCE hinst = GetModuleHandle(nullptr);
     HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(id), RT_RCDATA);
@@ -77,10 +78,8 @@ static LRESULT CALLBACK OverlayProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                 FillRect(hdc, &r, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
                 SetTextColor(hdc, RGB(255, 80, 80));
                 SetBkMode(hdc, TRANSPARENT);
-                DrawText(
-                    hdc, reinterpret_cast<LPCSTR>(L"FIX YO DAMN POSTURE GNG"), -1, &r,
-                    DT_CENTER | DT_VCENTER | DT_SINGLELINE
-                );
+                DrawText(hdc, L"FIX YO DAMN POSTURE GNG", -1, &r,
+                         DT_CENTER | DT_VCENTER | DT_SINGLELINE);
             }
 
             EndPaint(hwnd, &ps);
@@ -105,11 +104,11 @@ static void ensureClassRegistered() {
     static bool done = false;
     if (done) return;
 
-    WNDCLASSEX wc = { sizeof(wc) };
-    wc.lpfnWndProc = OverlayProc;
-    wc.hInstance = GetModuleHandle(nullptr);
-    wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wc.lpszClassName =  reinterpret_cast<LPCSTR>(OVERLAY_CLASS);
+    WNDCLASSEX wc    = { sizeof(wc) };
+    wc.lpfnWndProc   = OverlayProc;
+    wc.hInstance     = GetModuleHandle(nullptr);
+    wc.hCursor       = LoadCursor(nullptr, IDC_ARROW);
+    wc.lpszClassName = OVERLAY_CLASS;
     RegisterClassEx(&wc);
     done = true;
 }
@@ -128,15 +127,15 @@ static void drawAndRemove() {
 
     HWND hwnd = CreateWindowEx(
         WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
-        reinterpret_cast<LPCSTR>(OVERLAY_CLASS), nullptr,
+        OVERLAY_CLASS, nullptr,
         WS_POPUP | WS_VISIBLE,
         0, oy, ow, oh,
-        nullptr, nullptr, GetModuleHandle(nullptr),
-        nullptr
+        nullptr, nullptr, GetModuleHandle(nullptr), nullptr
     );
 
     if (!hwnd) {
         if (hbmp) DeleteObject(hbmp);
+        return;
     }
 
     SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(hbmp));
@@ -155,13 +154,13 @@ static void drawAndRemove() {
 /* Callback to play reminder audio */
 static void playAudio() {
     HINSTANCE hinst = GetModuleHandle(nullptr);
-    HRSRC hres = FindResource(hinst, MAKEINTRESOURCE(IDR_LOCK_IN), RT_RCDATA);
+    HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(IDR_LOCK_IN), RT_RCDATA);
     if (!hres) return;
 
     HGLOBAL hglob = LoadResource(hinst, hres);
     void*   pdata = LockResource(hglob);
 
-    PlaySound(reinterpret_cast<LPCSTR>(static_cast<LPCWSTR>(pdata)), nullptr, SND_MEMORY | SND_ASYNC | SND_NODEFAULT);
+    PlaySound(static_cast<LPCWSTR>(pdata), nullptr, SND_MEMORY | SND_ASYNC | SND_NODEFAULT);
 }
 
 /* Reminder thread entrypoint */
@@ -191,7 +190,7 @@ static void keybindListener() {
         bool ctrl  = GetAsyncKeyState(VK_CONTROL) & 0x8000;
         bool shift = GetAsyncKeyState(VK_SHIFT)   & 0x8000;
         bool l     = GetAsyncKeyState('L')        & 0x8000;
-        
+
         if (ctrl && shift && l) {
             printf("[+] ------------------------ Keybind pressed, program terminating ------------------------\n");
             running = false;
