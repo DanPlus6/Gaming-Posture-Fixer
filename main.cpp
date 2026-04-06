@@ -53,6 +53,6 @@ int main() {
     reminder.join();
     listener.detach();
 
-    throw("[-] --------------------- !!! Main thread terminated unexpectedly !!! --------------------- \n");
+    printf("[-] --------------------- !!! Main thread intiatively terminated !!! ---------------------\n");
     return 0;
 }
