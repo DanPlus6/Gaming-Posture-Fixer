@@ -9,7 +9,7 @@
 using namespace std;
 
 constexpr UINT  REMINDER_DELAY_S    = 10;
-constexpr UINT  OVERLAY_DURATION_MS = 750;
+constexpr UINT  OVERLAY_DURATION_MS = 1000;
 constexpr UINT  BMP_IDS[]           = { IDB_GOLDEN_POSTURE, IDB_BIG_PAPI, IDB_MEOW };
 constexpr UINT  BMP_COUNT           = 3;
 constexpr WCHAR OVERLAY_CLASS[]     = L"PostureOverlay";
