@@ -9,15 +9,24 @@ using namespace std;
 
 constexpr UINT  REMINDER_DELAY_S    = 10;
 constexpr UINT  OVERLAY_DURATION_MS = 5000;
+constexpr UINT  BMP_IDS[]           = { IDB_GOLDEN_POSTURE, IDB_BIG_PAPI, IDB_MEOW };
+constexpr UINT  BMP_COUNT           = sizeof(BMP_IDS);
 constexpr WCHAR OVERLAY_CLASS[]     = L"PostureOverlay";
 constexpr UINT  TIMER_DISMISS       = 1;
 
 atomic<bool> running(true);
 
+/* pick random reminder image */
+static UINT randomBmp() {
+    static mt19937 rng(random_device{}());
+    uniform_int_distribution<UINT> dist(0, BMP_COUNT - 1);
+    return BMP_IDS[dist(rng)];
+}
+
 /* load packaged BMP file from embedded source */
-static HBITMAP loadBitmap() {
+static HBITMAP loadBitmap(UINT id) {
     HINSTANCE hinst = GetModuleHandle(nullptr);
-    HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(IDB_GOLDEN_POSTURE), RT_RCDATA);
+    HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(id), RT_RCDATA);
     if (!hres) return nullptr;
 
     HGLOBAL hglob = LoadResource(hinst, hres);
@@ -115,7 +124,7 @@ static void drawAndRemove() {
     const int oh = sh / 8;
     const int oy = (sh - oh) / 2;
 
-    HBITMAP hbmp = loadBitmap();
+    HBITMAP hbmp = loadBitmap(randomBmp());
 
     HWND hwnd = CreateWindowEx(
         WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
