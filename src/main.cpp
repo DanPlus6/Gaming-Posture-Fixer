@@ -65,6 +65,9 @@ static LRESULT CALLBACK OverlayProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
                 RECT r = {};
                 GetClientRect(hwnd, &r);
+
+                SetStretchBltMode(hdc, HALFTONE);
+                SetBrushOrgEx(hdc, 0, 0, nullptr);
                 StretchBlt(
                     hdc, 0, 0, r.right, r.bottom,
                     mdc, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY
