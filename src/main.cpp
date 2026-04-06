@@ -72,24 +72,7 @@ static LRESULT CALLBACK OverlayProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
                 SelectObject(mdc, old);
                 DeleteDC(mdc);
-            } else {
-                RECT r = {};
-                GetClientRect(hwnd, &r);
-                FillRect(hdc, &r, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
-                SetTextColor(hdc, RGB(255, 80, 80));
-                SetBkMode(hdc, TRANSPARENT);
-                DrawText(hdc, L"FIX YO DAMN POSTURE GNG", -1, &r,
-                         DT_CENTER | DT_VCENTER | DT_SINGLELINE);
             }
-            // else {
-            //     RECT r = {};
-            //     GetClientRect(hwnd, &r);
-            //     FillRect(hdc, &r, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
-            //     SetTextColor(hdc, RGB(255, 80, 80));
-            //     SetBkMode(hdc, TRANSPARENT);
-            //     DrawText(hdc, L"FIX YO DAMN POSTURE GNG", -1, &r,
-            //              DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-            // }
 
             EndPaint(hwnd, &ps);
             return 0;
