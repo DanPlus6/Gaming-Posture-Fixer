@@ -34,19 +34,21 @@ void keybindListener() {
 void postureReminder() {
     int localDelay = delay;
     unsigned long long runtime = 0;
+    unsigned long long iteration = 0;
     while (running) {
-        if (delay == 0) {
-            printf("orz bruce\n");
-            
-            // reset delay
-            localDelay = delay;
-        } else {
+        if (localDelay > 0) {
             printf("delayed 1 sec | seconds left: %d | thread's runtime: %llu\n", localDelay, runtime);
 
             // delay 1 second
             this_thread::sleep_for(chrono::seconds(1));
             localDelay--;
-        }
+        } else {
+            printf("iteration %llu orz bruce\n", iteration);
+            
+            iteration++;
+            // reset delay
+            localDelay = delay;
+        } 
         runtime++;
     }
 }
