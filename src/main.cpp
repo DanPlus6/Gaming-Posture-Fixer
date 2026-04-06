@@ -1,6 +1,4 @@
 #include <windows.h>
-#include <gdiplus.h>
-#pragma comment (lib,"Gdiplus.lib")
 #include "../include/resource.h"
 #include <random>
 #include <thread>
@@ -8,39 +6,49 @@
 #include <chrono>
 #include <cstdio>
 using namespace std;
-using namespace Gdiplus;
 
+constexpr UINT  REMINDER_DELAY      = 10;
+constexpr UINT  OVERLAY_DURATION    = 5;
+constexpr WCHAR OVERLAY_CLASS[]     = L"PostureOverlay";
+constexpr UINT  TIMER_DISMISS       = 1;
 
-constexpr UINT delay = 10;
 atomic<bool> running(true);
-int imgIDs[] = { IDB_BIG_PAPI, IDB_GOLDEN_POSTURE, IDB_MEOW };
 
-void drawAndRemove() {
+/* Callback to draw and remove reminder image */
+static void drawAndRemove() {
     
 }
 
-void postureReminder() {
-    int localDelay = delay;
+/* Callback to play reminder audio */
+static void playAudio() {
+
+}
+
+/* Reminder thread entrypoint */
+static void postureReminder() {
+    int localDelay = REMINDER_DELAY;
     ULONGLONG runtime = 0;
     ULONGLONG iteration = 0;
     while (running) {
         if (localDelay > 0) {
             printf("[+] Delayed 1 second | Seconds left: %d | Total seconds elapsed: %llu\n", localDelay, runtime);
 
-            drawAndRemove();
-
             this_thread::sleep_for(chrono::seconds(1));
             localDelay--;
         } else {
             printf("[+] Iteration %llu\n", ++iteration);
 
-            localDelay = delay;
+            playAudio();
+            drawAndRemove();
+
+            localDelay = REMINDER_DELAY;
         }
         runtime++;
     }
 }
 
-void keybindListener() {
+/* Keybind listener thread entrypoint */
+static void keybindListener() {
     while (running) {
         bool ctrl  = GetAsyncKeyState(VK_CONTROL) & 0x8000;
         bool shift = GetAsyncKeyState(VK_SHIFT)   & 0x8000;
@@ -56,6 +64,7 @@ void keybindListener() {
     }
 }
 
+/* Main program entrypoint */
 int main() {
     printf("[+] --------------------- Entrypoint triggered --------------------- \n");
 
