@@ -1,5 +1,6 @@
 #include "../include/resource.h"
 
-IDB_GOLDEN_POSTURE RCDATA "../assets/golden-posture.png"
-IDB_BIG_PAPI       RCDATA "../assets/big-papi.png"
-IDB_MEOW           RCDATA "../assets/meow.png"
+IDB_GOLDEN_POSTURE RCDATA "../assets/golden-posture.bmp"
+IDB_BIG_PAPI       RCDATA "../assets/big-papi.bmp"
+IDB_MEOW           RCDATA "../assets/meow.bmp"
+IDR_LOCK_IN        RCDATA "../assets/lock-in.wav"
