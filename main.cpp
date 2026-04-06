@@ -14,7 +14,7 @@ void keybindListener() {
         bool l     = GetAsyncKeyState('L')        & 0x8000;
         
         if (ctrl && shift && l) {
-            printf("[+] Keybind pressed, program terminating...\n");
+            printf("[+] ---------------- Keybind pressed, program terminating ----------------\n");
             running = false;
             exit(0);
         }
@@ -46,7 +46,7 @@ void postureReminder() {
 
 
 int main() {
-    printf("[+] Entrypoint triggered\n");
+    printf("[+] ---------------- Entrypoint triggered ---------------- \n");
 
     thread listener(keybindListener);
     thread reminder(postureReminder);
@@ -54,6 +54,6 @@ int main() {
     reminder.join();
     listener.detach();
 
-    throw("[-] Main thread terminated unexpectedly.\n");
+    throw("[-] ----------------  Main thread terminated unexpectedly ---------------- \n");
     return 0;
 }
