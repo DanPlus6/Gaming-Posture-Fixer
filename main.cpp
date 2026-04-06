@@ -30,7 +30,7 @@ void postureReminder() {
     unsigned long long iteration = 0;
     while (running) {
         if (localDelay > 0) {
-            printf("[+] Delayed 1 second | Sseconds left: %d | Total seconds elapsed: %llu\n", localDelay, runtime);
+            printf("[+] Delayed 1 second | Seconds left: %d | Total seconds elapsed: %llu\n", localDelay, runtime);
 
             this_thread::sleep_for(chrono::seconds(1));
             localDelay--;
