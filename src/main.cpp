@@ -8,8 +8,8 @@
 #include <cstdio>
 using namespace std;
 
-constexpr UINT  REMINDER_DELAY_S    = 10;
-constexpr UINT  OVERLAY_DURATION_MS = 1000;
+constexpr UINT  REMINDER_DELAY_S    = 5;
+constexpr UINT  OVERLAY_DURATION_MS = 500;
 constexpr UINT  BMP_IDS[]           = { IDB_GOLDEN_POSTURE, IDB_BIG_PAPI, IDB_MEOW };
 constexpr UINT  BMP_COUNT           = 3;
 constexpr WCHAR OVERLAY_CLASS[]     = L"PostureOverlay";
@@ -108,6 +108,18 @@ static void ensureClassRegistered() {
     done = true;
 }
 
+/* Callback to play reminder audio */
+static void playAudio() {
+    HINSTANCE hinst = GetModuleHandle(nullptr);
+    HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(IDR_LOCK_IN), RT_RCDATA);
+    if (!hres) return;
+
+    HGLOBAL hglob = LoadResource(hinst, hres);
+    void*   pdata = LockResource(hglob);
+
+    PlaySound(static_cast<LPCWSTR>(pdata), nullptr, SND_MEMORY | SND_SYNC | SND_NODEFAULT);
+}
+
 /* Callback to draw and remove reminder image */
 static void drawAndRemove() {
     ensureClassRegistered();
@@ -146,17 +158,6 @@ static void drawAndRemove() {
     if (hbmp) DeleteObject(hbmp);
 }
 
-/* Callback to play reminder audio */
-static void playAudio() {
-    HINSTANCE hinst = GetModuleHandle(nullptr);
-    HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(IDR_LOCK_IN), RT_RCDATA);
-    if (!hres) return;
-
-    HGLOBAL hglob = LoadResource(hinst, hres);
-    void*   pdata = LockResource(hglob);
-
-    PlaySound(static_cast<LPCWSTR>(pdata), nullptr, SND_MEMORY | SND_ASYNC | SND_NODEFAULT);
-}
 
 /* Reminder thread entrypoint */
 static void postureReminder() {
@@ -171,7 +172,7 @@ static void postureReminder() {
             localDelay--;
         } else {
             printf("[+] Iteration %llu\n", ++iteration);
-            playAudio();
+            thread(playAudio).detach();
             drawAndRemove();
             localDelay = REMINDER_DELAY_S;
         }
