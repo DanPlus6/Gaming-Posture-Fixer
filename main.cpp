@@ -6,56 +6,47 @@
 using namespace std;
 
 
-/* Adjustable variable for delay between posture reminders */
-constexpr int delay = 10;
-
-/* Shared variable for terminating entire program */
 atomic<bool> running(true);
-/* Listener for keybind */
 void keybindListener() {
     while (running) {
         bool ctrl  = GetAsyncKeyState(VK_CONTROL) & 0x8000;
         bool shift = GetAsyncKeyState(VK_SHIFT)   & 0x8000;
         bool l     = GetAsyncKeyState('L')        & 0x8000;
         
-        // terminate upon keybind pressed
         if (ctrl && shift && l) {
-            printf("hopefully terminated :prayge:\n");
+            printf("[+] Keybind pressed, program terminating...\n");
             running = false;
             exit(0);
         }
 
-        // sleep for 10ms between checks for stability (100 checks/s)
         this_thread::sleep_for(chrono::milliseconds(10));
     }
 }
 
-/* main program */
+constexpr int delay = 10;
 void postureReminder() {
     int localDelay = delay;
     unsigned long long runtime = 0;
     unsigned long long iteration = 0;
     while (running) {
         if (localDelay > 0) {
-            printf("delayed 1 sec | seconds left: %d | thread's runtime: %llu\n", localDelay, runtime);
+            printf("[+] Delayed 1 second | Sseconds left: %d | Total seconds elapsed: %llu\n", localDelay, runtime);
 
-            // delay 1 second
             this_thread::sleep_for(chrono::seconds(1));
             localDelay--;
         } else {
-            printf("iteration %llu orz bruce\n", iteration);
-            
+            printf("[+] iteration %llu orz bruce\n", iteration);
             iteration++;
-            // reset delay
+
             localDelay = delay;
-        } 
+        }
         runtime++;
     }
 }
 
-/* program entrypoint */
+
 int main() {
-    printf("program started i think :blobpensivepray:\n");
+    printf("[+] Entrypoint triggered\n");
 
     thread listener(keybindListener);
     thread reminder(postureReminder);
@@ -63,6 +54,6 @@ int main() {
     reminder.join();
     listener.detach();
 
-    throw("main thread terminated how :blobfearful:\n");
+    throw("[-] Main thread terminated unexpectedly.\n");
     return 0;
 }
