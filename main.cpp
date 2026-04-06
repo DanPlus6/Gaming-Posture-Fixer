@@ -20,9 +20,9 @@ void keybindListener() {
         
         // terminate upon keybind pressed
         if (ctrl && shift && l) {
+            printf("hopefully terminated :prayge:\n");
             running = false;
             exit(0);
-            printf("hopefully terminated :prayge:\n");
         }
 
         // sleep for 10ms between checks for stability (100 checks/s)
@@ -59,6 +59,6 @@ int main() {
     reminder.join();
     listener.detach();
 
-    printf("main thread terminated :lul:\n");
+    throw("main thread terminated how :blobfearful:\n");
     return 0;
 }
