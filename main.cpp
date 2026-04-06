@@ -5,6 +5,7 @@
 #include <cstdio>
 using namespace std;
 
+
 /* Adjustable variable for delay between posture reminders */
 constexpr int delay = 10;
 
@@ -21,7 +22,7 @@ void keybindListener() {
         if (ctrl && shift && l) {
             running = false;
             exit(0);
-            printf("hopefully terminated");
+            printf("hopefully terminated :prayge:\n");
         }
 
         // sleep for 10ms between checks for stability (100 checks/s)
@@ -29,14 +30,35 @@ void keybindListener() {
     }
 }
 
+/* main program */
+void postureReminder() {
+    int localDelay = delay;
+    while (running) {
+        if (!delay) {
+            printf("orz bruce\n");
+            
+            // reset delay
+            localDelay = delay;
+        } else {
+            printf("delayed 1 sec\n");
+
+            // delay 1 second
+            this_thread::sleep_for(chrono::seconds(1));
+            localDelay--;
+        }
+    }
+}
+
 /* program entrypoint */
 int main() {
-    printf("program started i think\n");
+    printf("program started i think :blobpensivepray:\n");
 
     thread listener(keybindListener);
+    thread reminder(postureReminder);
 
+    reminder.join();
     listener.detach();
 
-    printf("main thread terminated lul");
+    printf("main thread terminated :lul:\n");
     return 0;
 }
