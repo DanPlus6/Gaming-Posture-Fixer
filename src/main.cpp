@@ -11,7 +11,7 @@ using namespace std;
 constexpr UINT  REMINDER_DELAY_S    = 5;
 constexpr UINT  OVERLAY_DURATION_MS = 500;
 constexpr UINT  BMP_IDS[]           = { IDB_GOLDEN_POSTURE, IDB_BIG_PAPI, IDB_MEOW };
-constexpr UINT  BMP_COUNT           = 3;
+constexpr UINT  BMP_COUNT           = static_cast<UINT>(sizeof(BMP_IDS)) / sizeof(UINT);
 constexpr WCHAR OVERLAY_CLASS[]     = L"PostureOverlay";
 constexpr UINT  TIMER_DISMISS       = 1;
 
@@ -25,19 +25,19 @@ static UINT randomBmp() {
 }
 
 /* load packaged BMP file from embedded resource */
-static HBITMAP loadBitmap(UINT id) {
-    HINSTANCE hinst = GetModuleHandle(nullptr);
-    HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(id), RT_RCDATA);
+static HBITMAP loadBitmap(const UINT id) {
+    const HINSTANCE hinst = GetModuleHandle(nullptr);
+    const HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(id), RT_RCDATA);
     if (!hres) return nullptr;
 
-    HGLOBAL hglob = LoadResource(hinst, hres);
+    const HGLOBAL hglob = LoadResource(hinst, hres);
     void*   pdata = LockResource(hglob);
 
-    auto* fhdr = static_cast<BITMAPFILEHEADER*>(pdata);
-    auto* ihdr = reinterpret_cast<BITMAPINFO*>(static_cast<BYTE*>(pdata) + sizeof(BITMAPFILEHEADER));
+    const auto* fhdr = static_cast<BITMAPFILEHEADER*>(pdata);
+    const auto* ihdr = reinterpret_cast<BITMAPINFO*>(static_cast<BYTE*>(pdata) + sizeof(BITMAPFILEHEADER));
 
-    HDC     hdc = GetDC(nullptr);
-    HBITMAP hbm = CreateDIBitmap(
+    const HDC     hdc = GetDC(nullptr);
+    const HBITMAP hbm = CreateDIBitmap(
         hdc,
         &ihdr->bmiHeader,
         CBM_INIT,
@@ -50,16 +50,15 @@ static HBITMAP loadBitmap(UINT id) {
 }
 
 /* window proc */
-static LRESULT CALLBACK OverlayProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
+static LRESULT CALLBACK OverlayProc(const HWND hwnd, const UINT msg, const WPARAM wp, const LPARAM lp) {
     switch (msg) {
         case WM_PAINT: {
             PAINTSTRUCT ps;
-            HDC  hdc  = BeginPaint(hwnd, &ps);
-            auto hbmp = reinterpret_cast<HBITMAP>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+            const HDC  hdc  = BeginPaint(hwnd, &ps);
 
-            if (hbmp) {
-                HDC     mdc = CreateCompatibleDC(hdc);
-                HBITMAP old = static_cast<HBITMAP>(SelectObject(mdc, hbmp));
+            if (const auto hbmp = reinterpret_cast<HBITMAP>(GetWindowLongPtr(hwnd, GWLP_USERDATA))) {
+                const HDC     mdc = CreateCompatibleDC(hdc);
+                const auto old = static_cast<HBITMAP>(SelectObject(mdc, hbmp));
                 BITMAP  bm  = {};
                 GetObject(hbmp, sizeof(bm), &bm);
 
@@ -89,6 +88,8 @@ static LRESULT CALLBACK OverlayProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
+
+        default: break;
     }
 
     return DefWindowProc(hwnd, msg, wp, lp);
@@ -110,12 +111,12 @@ static void ensureClassRegistered() {
 
 /* Callback to play reminder audio */
 static void playAudio() {
-    HINSTANCE hinst = GetModuleHandle(nullptr);
-    HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(IDR_LOCK_IN), RT_RCDATA);
+    const HINSTANCE hinst = GetModuleHandle(nullptr);
+    const HRSRC     hres  = FindResource(hinst, MAKEINTRESOURCE(IDR_LOCK_IN), RT_RCDATA);
     if (!hres) return;
 
-    HGLOBAL hglob = LoadResource(hinst, hres);
-    void*   pdata = LockResource(hglob);
+    const HGLOBAL hglob = LoadResource(hinst, hres);
+    const void*   pdata = LockResource(hglob);
 
     PlaySound(static_cast<LPCWSTR>(pdata), nullptr, SND_MEMORY | SND_SYNC | SND_NODEFAULT);
 }
@@ -132,7 +133,7 @@ static void drawAndRemove() {
 
     HBITMAP hbmp = loadBitmap(randomBmp());
 
-    HWND hwnd = CreateWindowEx(
+    const HWND hwnd = CreateWindowEx(
         WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
         OVERLAY_CLASS, nullptr,
         WS_POPUP | WS_VISIBLE,
@@ -183,11 +184,10 @@ static void postureReminder() {
 /* Keybind listener thread entrypoint */
 static void keybindListener() {
     while (running) {
-        bool ctrl  = GetAsyncKeyState(VK_CONTROL) & 0x8000;
-        bool shift = GetAsyncKeyState(VK_SHIFT)   & 0x8000;
-        bool l     = GetAsyncKeyState('L')        & 0x8000;
+        const bool ctrl  = GetAsyncKeyState(VK_CONTROL) & 0x8000;
+        const bool shift = GetAsyncKeyState(VK_SHIFT)   & 0x8000;
 
-        if (ctrl && shift && l) {
+        if (const bool l = GetAsyncKeyState('L') & 0x8000; ctrl && shift && l) {
             printf("[+] ------------------------ Keybind pressed, program terminating ------------------------\n");
             running = false;
             exit(0);
