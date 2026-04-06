@@ -2,6 +2,7 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
+#include "../include/resource.h"
 #include <cstdio>
 using namespace std;
 
