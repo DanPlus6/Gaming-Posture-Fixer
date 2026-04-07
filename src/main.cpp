@@ -57,7 +57,7 @@ static LRESULT CALLBACK OverlayProc(const HWND hwnd, const UINT msg, const WPARA
             const HDC  hdc  = BeginPaint(hwnd, &ps);
 
             if (const auto hbmp = reinterpret_cast<HBITMAP>(GetWindowLongPtr(hwnd, GWLP_USERDATA))) {
-                const HDC     mdc = CreateCompatibleDC(hdc);
+                const auto mdc = CreateCompatibleDC(hdc);
                 const auto old = static_cast<HBITMAP>(SelectObject(mdc, hbmp));
                 BITMAP  bm  = {};
                 GetObject(hbmp, sizeof(bm), &bm);
