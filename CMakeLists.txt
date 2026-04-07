@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 enable_language(RC)
 
-add_executable(Gaming_Posture_Fixer
+add_executable(Gaming_Posture_Fixer WIN32
         src/main.cpp
         src/resources.rc
 )
