@@ -192,7 +192,7 @@ static void keybindListener() {
 }
 
 /* Main program entrypoint */
-int main() {
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     thread listener(keybindListener);
     thread reminder(postureReminder);
 
