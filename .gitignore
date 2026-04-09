@@ -1,4 +1,10 @@
+# IDEs 🤡
 .vs
 .vscode
 .idea
+
+# build files
 *.exe
+build
+cmake-build-debug
+
