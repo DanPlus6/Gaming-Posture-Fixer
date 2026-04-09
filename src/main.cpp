@@ -5,7 +5,6 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
-#include <cstdio>
 using namespace std;
 
 constexpr UINT  REMINDER_DELAY_S    = 300;
